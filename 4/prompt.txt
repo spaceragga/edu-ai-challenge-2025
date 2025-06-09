@@ -1,0 +1,49 @@
+Analyze the following code from three different expert perspectives. For each perspective, provide specific, actionable recommendations and observations to improve the code.
+
+Code to analyze:
+```javascript
+function processUserData(data: any) {
+  var users = [];
+
+  for (var i = 0; i < data.length; i++) {
+    var user = {
+      id: data[i].id,
+      name: data[i].name,
+      email: data[i].email,
+      active: data[i].status === 'active' ? true : false
+    };
+    users.push(user);
+  }
+  console.log("Processed " + users.length + " users");
+  return users;
+}
+
+function saveToDatabase(users) {
+  //TODO: Implement database connection
+  var success = true;
+  return success;
+}
+```
+
+Please analyze this code from the following perspectives:
+
+1. As an Experienced Developer:
+- Focus on code quality, maintainability, and best practices
+- Consider TypeScript usage, error handling, and code structure
+- Suggest improvements for readability and maintainability
+
+2. As a Security Engineer:
+- Identify potential security vulnerabilities
+- Analyze data validation and sanitization
+- Consider privacy and data protection aspects
+
+3. As a Performance Specialist:
+- Evaluate performance bottlenecks
+- Suggest optimizations for data processing
+- Consider memory usage and scalability
+
+For each perspective, provide:
+- Specific issues identified
+- Concrete recommendations for improvement
+- Code examples where applicable
+- Impact assessment of suggested changes 
