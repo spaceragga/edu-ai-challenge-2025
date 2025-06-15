@@ -1,0 +1,43 @@
+
+> enigma-machine@1.0.0 test:coverage
+> jest --coverage
+
+PASS ./enigma.test.js
+  Enigma Machine Tests
+    plugboardSwap function
+      √ should swap letters correctly (2 ms)
+      √ should handle multiple pairs
+      √ should handle empty pairs
+    Rotor class
+      √ should initialize correctly (1 ms)
+      √ should step correctly
+      √ should detect notch correctly (1 ms)
+      √ should perform forward encoding correctly
+      √ should perform backward encoding correctly
+    Enigma class
+      √ should initialize correctly (1 ms)
+      √ should encrypt and decrypt correctly (basic) (1 ms)
+      √ should encrypt and decrypt with plugboard
+      √ should encrypt and decrypt with ring settings
+      √ should encrypt and decrypt with different rotor positions
+      √ should step rotors correctly
+      √ should handle rotor stepping with notch positions (1 ms)
+      √ should preserve non-alphabetic characters
+      √ should handle lowercase input (1 ms)
+      √ should produce different outputs for different settings
+      √ should be symmetric (encryption = decryption)
+      √ should never encrypt a letter to itself (3 ms)
+    Integration tests
+      √ should handle complex message with all features (1 ms)
+
+-----------|---------|----------|---------|---------|-------------------
+File       | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-----------|---------|----------|---------|---------|-------------------
+All files  |   74.57 |     62.5 |   68.42 |   73.07 |                   
+ enigma.js |   74.57 |     62.5 |   68.42 |   73.07 | 90-114,122        
+-----------|---------|----------|---------|---------|-------------------
+Test Suites: 1 passed, 1 total
+Tests:       21 passed, 21 total
+Snapshots:   0 total
+Time:        0.354 s, estimated 1 s
+Ran all test suites.
