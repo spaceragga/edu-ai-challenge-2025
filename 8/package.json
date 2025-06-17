@@ -1,0 +1,38 @@
+{
+  "name": "robust-validation-library",
+  "version": "1.0.0",
+  "description": "A comprehensive type-safe validation library for JavaScript with support for primitive and complex data types",
+  "main": "schema.js",
+  "scripts": {
+    "cli": "node cli.js",
+    "demo": "node demo.js",
+    "examples": "node examples.js",
+    "test": "node schema.test.js",
+    "coverage": "npx c8 node schema.test.js",
+    "coverage-report": "npx c8 --reporter=text --reporter=lcov node schema.test.js > test_report.txt 2>&1"
+  },
+  "keywords": [
+    "validation",
+    "schema",
+    "type-safe",
+    "javascript",
+    "data-validation",
+    "form-validation"
+  ],
+  "author": "AI-Assisted Development with Cursor IDE",
+  "license": "MIT",
+  "devDependencies": {
+    "c8": "^8.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spaceragga/edu-ai-challenge-2025.git"
+  },
+  "bugs": {
+    "url": "https://github.com/spaceragga/edu-ai-challenge-2025/issues"
+  },
+  "homepage": "https://github.com/spaceragga/edu-ai-challenge-2025#readme"
+}

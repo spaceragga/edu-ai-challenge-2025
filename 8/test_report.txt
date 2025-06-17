@@ -1,0 +1,85 @@
+
+=== Base Validator Tests ===
+✓ Base validator - required value
+✓ Base validator - optional value
+✓ Base validator - custom message
+
+=== String Validator Tests ===
+✓ String validator - valid string
+✓ String validator - invalid types
+✓ String validator - minLength
+✓ String validator - maxLength
+✓ String validator - length range
+✓ String validator - pattern matching
+✓ String validator - notEmpty
+✓ String validator - email
+✓ String validator - URL
+
+=== Number Validator Tests ===
+✓ Number validator - valid numbers
+✓ Number validator - invalid types
+✓ Number validator - min value
+✓ Number validator - max value
+✓ Number validator - range
+✓ Number validator - positive
+✓ Number validator - negative
+✓ Number validator - integer
+
+=== Boolean Validator Tests ===
+✓ Boolean validator - valid booleans
+✓ Boolean validator - invalid types
+✓ Boolean validator - must be true
+✓ Boolean validator - must be false
+
+=== Date Validator Tests ===
+✓ Date validator - valid dates
+✓ Date validator - invalid dates
+✓ Date validator - after date
+✓ Date validator - before date
+
+=== Array Validator Tests ===
+✓ Array validator - valid arrays
+✓ Array validator - invalid types
+✓ Array validator - element validation
+✓ Array validator - nested validation
+✓ Array validator - minLength
+✓ Array validator - maxLength
+✓ Array validator - notEmpty
+
+=== Object Validator Tests ===
+✓ Object validator - valid objects
+✓ Object validator - invalid types
+✓ Object validator - field validation
+✓ Object validator - missing required fields
+✓ Object validator - optional fields
+✓ Object validator - nested objects
+
+=== Complex Schema Tests ===
+✓ Complex user schema - valid data
+✓ Complex user schema - multiple validation errors
+
+=== Union and Literal Types Tests ===
+✓ Union validator - oneOf
+✓ Literal validator
+
+=== Edge Cases Tests ===
+✓ Chaining validators
+✓ Optional chaining
+✓ Custom error messages
+
+=== Performance Tests ===
+✓ Large array validation performance
+✓ Deep nested object validation
+
+=== Test Results Summary ===
+Total Tests: 50
+Passed: 50
+Failed: 0
+Success Rate: 100.00%
+🎉 All tests passed!
+-----------|---------|----------|---------|---------|-------------------
+File       | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-----------|---------|----------|---------|---------|-------------------
+All files  |   99.28 |    97.02 |     100 |   99.28 |                   
+ schema.js |   99.28 |    97.02 |     100 |   99.28 | 342-343,432-433   
+-----------|---------|----------|---------|---------|-------------------
