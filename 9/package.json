@@ -1,0 +1,24 @@
+{
+  "name": "service-analyzer",
+  "version": "1.0.0",
+  "description": "A lightweight console application that generates comprehensive service analysis reports",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "service-analysis",
+    "ai",
+    "openai",
+    "console-app"
+  ],
+  "author": "Service Analyzer",
+  "license": "MIT",
+  "dependencies": {
+    "openai": "^4.20.1",
+    "dotenv": "^16.0.3",
+    "chalk": "^4.1.2",
+    "ora": "^5.4.1",
+    "inquirer": "^8.2.5"
+  }
+}
