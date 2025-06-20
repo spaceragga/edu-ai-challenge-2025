@@ -24,7 +24,21 @@ try {
 
 // Function that will be called by OpenAI to filter products
 function filterProducts(criteria) {
-  const { categories, maxPrice, minRating, inStockOnly, keywords } = criteria;
+  const {
+    categories,
+    excludeCategories,
+    maxPrice,
+    minPrice,
+    priceRange,
+    minRating,
+    inStockOnly,
+    stockStatus,
+    keywords,
+    excludeKeywords,
+    sortBy,
+    order,
+    limit,
+  } = criteria;
 
   let filtered = products;
 
@@ -37,9 +51,32 @@ function filterProducts(criteria) {
     );
   }
 
-  // Filter by max price
-  if (maxPrice !== undefined) {
-    filtered = filtered.filter((product) => product.price <= maxPrice);
+  // Exclude categories
+  if (excludeCategories && excludeCategories.length > 0) {
+    filtered = filtered.filter(
+      (product) =>
+        !excludeCategories.some(
+          (cat) => product.category.toLowerCase() === cat.toLowerCase()
+        )
+    );
+  }
+
+  // Filter by price range (takes precedence over individual min/max)
+  if (priceRange) {
+    if (priceRange.min !== undefined) {
+      filtered = filtered.filter((product) => product.price >= priceRange.min);
+    }
+    if (priceRange.max !== undefined) {
+      filtered = filtered.filter((product) => product.price <= priceRange.max);
+    }
+  } else {
+    // Filter by individual price limits
+    if (maxPrice !== undefined) {
+      filtered = filtered.filter((product) => product.price <= maxPrice);
+    }
+    if (minPrice !== undefined) {
+      filtered = filtered.filter((product) => product.price >= minPrice);
+    }
   }
 
   // Filter by min rating
@@ -48,7 +85,20 @@ function filterProducts(criteria) {
   }
 
   // Filter by stock status
-  if (inStockOnly) {
+  if (stockStatus) {
+    switch (stockStatus) {
+      case "in_stock":
+        filtered = filtered.filter((product) => product.in_stock === true);
+        break;
+      case "out_of_stock":
+        filtered = filtered.filter((product) => product.in_stock === false);
+        break;
+      case "any":
+        // No filtering needed
+        break;
+    }
+  } else if (inStockOnly) {
+    // Backward compatibility
     filtered = filtered.filter((product) => product.in_stock === true);
   }
 
@@ -59,6 +109,51 @@ function filterProducts(criteria) {
         product.name.toLowerCase().includes(keyword.toLowerCase())
       )
     );
+  }
+
+  // Exclude keywords from product name
+  if (excludeKeywords && excludeKeywords.length > 0) {
+    filtered = filtered.filter(
+      (product) =>
+        !excludeKeywords.some((keyword) =>
+          product.name.toLowerCase().includes(keyword.toLowerCase())
+        )
+    );
+  }
+
+  // Sort the filtered results
+  if (sortBy) {
+    filtered.sort((a, b) => {
+      let aValue, bValue;
+
+      switch (sortBy) {
+        case "price":
+          aValue = a.price;
+          bValue = b.price;
+          break;
+        case "rating":
+          aValue = a.rating;
+          bValue = b.rating;
+          break;
+        case "name":
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+          break;
+        default:
+          return 0;
+      }
+
+      if (order === "desc") {
+        return bValue > aValue ? 1 : bValue < aValue ? -1 : 0;
+      } else {
+        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+      }
+    });
+  }
+
+  // Limit results if specified
+  if (limit && limit > 0) {
+    filtered = filtered.slice(0, limit);
   }
 
   return filtered;
@@ -77,22 +172,72 @@ const functionDefinition = {
         description:
           "Product categories to filter by (Electronics, Fitness, Kitchen, Books, Clothing)",
       },
+      excludeCategories: {
+        type: "array",
+        items: { type: "string" },
+        description: "Product categories to exclude from results",
+      },
       maxPrice: {
         type: "number",
         description: "Maximum price for products",
       },
+      minPrice: {
+        type: "number",
+        description: "Minimum price for products",
+      },
+      priceRange: {
+        type: "object",
+        properties: {
+          min: {
+            type: "number",
+            description: "Minimum price in the range",
+          },
+          max: {
+            type: "number",
+            description: "Maximum price in the range",
+          },
+        },
+        description:
+          "Price range filter (overrides minPrice/maxPrice if provided)",
+      },
       minRating: {
         type: "number",
-        description: "Minimum rating for products",
+        description: "Minimum rating for products (0-5 scale)",
       },
       inStockOnly: {
         type: "boolean",
-        description: "Whether to only include products that are in stock",
+        description:
+          "Whether to only include products that are in stock (deprecated - use stockStatus)",
+      },
+      stockStatus: {
+        type: "string",
+        enum: ["in_stock", "out_of_stock", "any"],
+        description:
+          "Filter by stock availability - 'in_stock' for available items, 'out_of_stock' for unavailable items, 'any' for both",
       },
       keywords: {
         type: "array",
         items: { type: "string" },
         description: "Keywords to search for in product names",
+      },
+      excludeKeywords: {
+        type: "array",
+        items: { type: "string" },
+        description: "Keywords to exclude from product names",
+      },
+      sortBy: {
+        type: "string",
+        enum: ["price", "rating", "name"],
+        description: "Field to sort by (price, rating, or name)",
+      },
+      order: {
+        type: "string",
+        enum: ["asc", "desc"],
+        description: "Sort order - 'asc' for ascending, 'desc' for descending",
+      },
+      limit: {
+        type: "number",
+        description: "Maximum number of results to return",
       },
     },
     required: [],
@@ -106,11 +251,44 @@ async function searchProducts(userQuery) {
 Available product categories: Electronics, Fitness, Kitchen, Books, Clothing
 
 Extract filtering criteria from the user's request and call the function accordingly. Consider:
-- Price ranges (convert phrases like "under $200" to maxPrice: 200)
-- Categories mentioned or implied
-- Rating requirements (convert phrases like "good rating" to minRating: 4.0)
-- Stock availability preferences
-- Keywords for specific product types
+
+PRICE FILTERING:
+- "under $200" → maxPrice: 200
+- "over $50" → minPrice: 50  
+- "between $50 and $200" → priceRange: {min: 50, max: 200}
+- "around $100" → priceRange: {min: 90, max: 110}
+
+CATEGORY FILTERING:
+- "electronics" → categories: ["Electronics"]
+- "everything except books" → excludeCategories: ["Books"]
+- "not clothing" → excludeCategories: ["Clothing"]
+
+RATING FILTERING:
+- "good rating" / "well rated" → minRating: 4.0
+- "excellent rating" → minRating: 4.5
+- "highly rated" → minRating: 4.3
+
+STOCK FILTERING:
+- "in stock" / "available" → stockStatus: "in_stock"
+- "out of stock" → stockStatus: "out_of_stock"  
+- "what's actually available" → stockStatus: "in_stock"
+
+KEYWORD FILTERING:
+- "blender" → keywords: ["blender"]
+- "not blenders" → excludeKeywords: ["blender"]
+- "cooking breakfast" → keywords: ["coffee", "toaster", "kettle"]
+
+SORTING:
+- "most expensive" → sortBy: "price", order: "desc"
+- "cheapest" → sortBy: "price", order: "asc"
+- "best rated" → sortBy: "rating", order: "desc" 
+- "worst rated" → sortBy: "rating", order: "asc"
+- "alphabetically" → sortBy: "name", order: "asc"
+
+LIMITS:
+- "the most expensive" → limit: 1
+- "top 5" / "best 3" → limit: 5 or 3
+- "cheapest option" → limit: 1
 
 Current product data includes: ${products.length} products across ${[
       ...new Set(products.map((p) => p.category)),
