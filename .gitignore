@@ -5,3 +5,7 @@
 */node_modules
 */coverage
 */reports
+
+*/transcription_*.md
+*/summary_*.md
+*/analysis_*.json
